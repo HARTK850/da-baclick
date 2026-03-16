@@ -1,0 +1,126 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "A user of the application.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "The user's unique ID." },
+        "email": { "type": "string", "format": "email", "description": "The user's email address." },
+        "displayName": { "type": "string", "description": "The user's display name." },
+        "profilePictureUrl": { "type": "string", "description": "The user's profile picture URL." },
+        "defaultTimerSeconds": { "type": "number", "description": "Default timer for new questions." },
+        "defaultScoreMethod": { "type": "string", "enum": ["regular", "winning_percentage"], "description": "Default scoring method." },
+        "purchasedGamesCount": { "type": "number", "description": "Number of purchased games." },
+        "freeGamesEarned": { "type": "number", "description": "Number of free games earned." },
+        "gameCredits": { "type": "number", "description": "Number of game credits available." },
+        "role": { "type": "string", "enum": ["user", "admin"], "description": "The user's role." }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "Quiz": {
+      "title": "Quiz",
+      "description": "A quiz created by a user.",
+      "type": "object",
+      "properties": {
+        "quizId": { "type": "string", "description": "The quiz's unique ID." },
+        "userId": { "type": "string", "description": "The ID of the user who created the quiz." },
+        "quizName": { "type": "string", "description": "The name of the quiz." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last update timestamp." },
+        "defaultTimerSeconds": { "type": "number", "description": "Default timer for questions in this quiz." },
+        "defaultScoreMethod": { "type": "string", "enum": ["regular", "winning_percentage"], "description": "Default scoring method." },
+        "baseRegularScore": { "type": "number", "description": "Base score for regular method." },
+        "minPercentageScore": { "type": "number", "description": "Min score for percentage method." },
+        "maxPercentageScore": { "type": "number", "description": "Max score for percentage method." },
+        "questions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "type": { "type": "string", "enum": ["regular", "image", "video", "audio", "poll"] },
+              "content": { "type": "string" },
+              "mediaUrl": { "type": "string" },
+              "answers": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "text": { "type": "string" },
+                    "isCorrect": { "type": "boolean" }
+                  }
+                }
+              },
+              "timerSeconds": { "type": "number" },
+              "isDoubleBetEnabled": { "type": "boolean" }
+            }
+          }
+        }
+      },
+      "required": ["quizId", "userId", "quizName", "questions"]
+    },
+    "Feedback": {
+      "title": "Feedback",
+      "description": "User feedback.",
+      "type": "object",
+      "properties": {
+        "feedbackId": { "type": "string" },
+        "userId": { "type": "string" },
+        "email": { "type": "string" },
+        "rating": { "type": "number" },
+        "feedbackText": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["feedbackId", "rating", "feedbackText"]
+    },
+    "ExemptAccount": {
+      "title": "Exempt Account",
+      "description": "An account exempt from payment.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email" }
+      },
+      "required": ["email"]
+    },
+    "GameSession": {
+      "title": "Game Session",
+      "description": "An active game session.",
+      "type": "object",
+      "properties": {
+        "sessionId": { "type": "string" },
+        "quizId": { "type": "string" },
+        "hostId": { "type": "string" },
+        "status": { "type": "string", "enum": ["waiting", "playing", "finished"] },
+        "currentQuestionIndex": { "type": "number" },
+        "scoreMethod": { "type": "string" },
+        "participantsCount": { "type": "number" },
+        "isPaymentRequired": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["sessionId", "quizId", "hostId", "status"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Stores user profiles."
+    },
+    "quizzes/{quizId}": {
+      "schema": { "$ref": "#/entities/Quiz" },
+      "description": "Stores user-created quizzes."
+    },
+    "feedbacks/{feedbackId}": {
+      "schema": { "$ref": "#/entities/Feedback" },
+      "description": "Stores user feedback."
+    },
+    "exemptAccounts/{email}": {
+      "schema": { "$ref": "#/entities/ExemptAccount" },
+      "description": "Stores emails of exempt accounts."
+    },
+    "gameSessions/{sessionId}": {
+      "schema": { "$ref": "#/entities/GameSession" },
+      "description": "Stores active game sessions."
+    }
+  }
+}
