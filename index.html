@@ -1,1 +1,1804 @@
-<script src="src/app/home/home.component.ts">
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IVR AI Control Panel — ימות המשיח</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080c14;
+  --bg2: #0d1422;
+  --bg3: #111827;
+  --surface: #141e2e;
+  --surface2: #1a2540;
+  --border: rgba(99,179,237,0.12);
+  --border2: rgba(99,179,237,0.22);
+  --accent: #38bdf8;
+  --accent2: #818cf8;
+  --accent3: #34d399;
+  --neon: 0 0 20px rgba(56,189,248,0.4), 0 0 60px rgba(56,189,248,0.1);
+  --neon2: 0 0 20px rgba(129,140,248,0.4);
+  --text: #e2e8f0;
+  --text2: #94a3b8;
+  --text3: #64748b;
+  --red: #f87171;
+  --yellow: #fbbf24;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --font: 'IBM Plex Sans Hebrew', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
+}
+[data-theme="light"] {
+  --bg: #f0f4f8;
+  --bg2: #e8edf5;
+  --bg3: #dde4ef;
+  --surface: #ffffff;
+  --surface2: #f1f5fb;
+  --border: rgba(56,189,248,0.2);
+  --border2: rgba(56,189,248,0.4);
+  --text: #0f172a;
+  --text2: #475569;
+  --text3: #94a3b8;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:var(--font);
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+  transition:background var(--transition),color var(--transition);
+}
+
+/* ─── ANIMATED BACKGROUND ─── */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background: radial-gradient(ellipse 80% 50% at 20% 10%, rgba(56,189,248,0.05) 0%, transparent 60%),
+              radial-gradient(ellipse 60% 40% at 80% 80%, rgba(129,140,248,0.05) 0%, transparent 60%);
+  pointer-events:none;z-index:0;
+}
+
+/* ─── LAYOUT ─── */
+.app-layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+
+/* ─── SIDEBAR ─── */
+.sidebar{
+  width:260px;min-width:260px;
+  background:var(--bg2);
+  border-left:1px solid var(--border);
+  display:flex;flex-direction:column;
+  padding:1.5rem 0;
+  position:sticky;top:0;height:100vh;
+  overflow-y:auto;
+  transition:width var(--transition);
+}
+.sidebar-logo{
+  padding:0 1.5rem 1.5rem;
+  border-bottom:1px solid var(--border);
+  margin-bottom:1rem;
+}
+.sidebar-logo .logo-badge{
+  display:flex;align-items:center;gap:0.75rem;
+}
+.logo-icon{
+  width:40px;height:40px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;
+  box-shadow:var(--neon);
+}
+.logo-text{font-size:1rem;font-weight:700;line-height:1.2;}
+.logo-sub{font-size:0.7rem;color:var(--text3);font-family:var(--mono);}
+
+.sidebar-section{
+  padding:0 0.75rem;
+  margin-bottom:0.5rem;
+}
+.sidebar-label{
+  font-size:0.65rem;font-weight:600;letter-spacing:0.1em;
+  color:var(--text3);text-transform:uppercase;
+  padding:0 0.75rem;margin-bottom:0.4rem;margin-top:0.5rem;
+}
+.nav-item{
+  display:flex;align-items:center;gap:0.75rem;
+  padding:0.65rem 0.75rem;
+  border-radius:var(--radius-sm);
+  cursor:pointer;
+  transition:all var(--transition);
+  color:var(--text2);
+  font-size:0.9rem;
+  font-weight:500;
+  border:1px solid transparent;
+  position:relative;
+}
+.nav-item:hover{background:var(--surface);color:var(--text);}
+.nav-item.active{
+  background:linear-gradient(135deg,rgba(56,189,248,0.15),rgba(129,140,248,0.1));
+  color:var(--accent);
+  border-color:var(--border2);
+  box-shadow:var(--neon);
+}
+.nav-item .nav-icon{font-size:1.1rem;width:22px;text-align:center;}
+.nav-badge{
+  margin-right:auto;
+  background:var(--accent);color:#000;
+  font-size:0.6rem;font-weight:700;
+  padding:2px 6px;border-radius:20px;
+}
+.nav-badge.purple{background:var(--accent2);}
+.nav-badge.green{background:var(--accent3);}
+
+.sidebar-bottom{margin-top:auto;padding:1rem 0.75rem 0;border-top:1px solid var(--border);}
+
+/* ─── MAIN ─── */
+.main-content{
+  flex:1;display:flex;flex-direction:column;
+  min-height:100vh;overflow:hidden;
+}
+
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 2rem;
+  background:var(--bg2);
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:100;
+  backdrop-filter:blur(20px);
+}
+.topbar-title{
+  font-size:1.1rem;font-weight:600;
+  display:flex;align-items:center;gap:0.75rem;
+}
+.topbar-title .breadcrumb{color:var(--text3);font-size:0.85rem;font-weight:400;}
+.topbar-actions{display:flex;align-items:center;gap:0.75rem;}
+
+.btn-icon{
+  width:36px;height:36px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  color:var(--text2);font-size:1rem;
+  transition:all var(--transition);
+  outline:none;
+}
+.btn-icon:hover{background:var(--surface2);color:var(--text);border-color:var(--border2);}
+
+/* ─── PAGES ─── */
+.page{display:none;padding:2rem;flex:1;}
+.page.active{display:block;animation:fadeIn 0.3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+.page-header{margin-bottom:2rem;}
+.page-header h1{font-size:1.8rem;font-weight:700;margin-bottom:0.4rem;}
+.page-header p{color:var(--text2);font-size:0.95rem;}
+
+/* ─── CARDS ─── */
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:1.75rem;
+  transition:all var(--transition);
+}
+.card:hover{border-color:var(--border2);}
+.card-header{
+  display:flex;align-items:center;gap:0.75rem;
+  margin-bottom:1.5rem;
+}
+.card-icon{
+  width:38px;height:38px;
+  background:linear-gradient(135deg,rgba(56,189,248,0.2),rgba(56,189,248,0.1));
+  border:1px solid rgba(56,189,248,0.3);
+  border-radius:var(--radius-sm);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;
+}
+.card-title{font-weight:600;font-size:1rem;}
+.card-subtitle{color:var(--text3);font-size:0.8rem;}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;}
+.col-span-2{grid-column:span 2;}
+
+/* ─── FORM ELEMENTS ─── */
+.form-group{margin-bottom:1.25rem;}
+label.form-label{
+  display:block;margin-bottom:0.5rem;
+  font-size:0.85rem;font-weight:500;color:var(--text2);
+}
+input[type=text],input[type=password],textarea,select{
+  width:100%;
+  background:var(--bg3);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:0.7rem 1rem;
+  border-radius:var(--radius-sm);
+  font-family:var(--font);
+  font-size:0.9rem;
+  outline:none;
+  transition:all var(--transition);
+  appearance:none;
+}
+input[type=text]:focus,input[type=password]:focus,textarea:focus,select:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(56,189,248,0.15);
+}
+textarea{resize:vertical;min-height:100px;line-height:1.7;}
+select option{background:var(--bg3);}
+
+.input-group-inline{display:flex;gap:0.5rem;}
+.input-group-inline input{flex:1;}
+
+/* ─── BUTTONS ─── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;
+  padding:0.7rem 1.5rem;
+  border-radius:var(--radius-sm);
+  font-family:var(--font);
+  font-size:0.9rem;font-weight:600;
+  cursor:pointer;border:none;outline:none;
+  transition:all var(--transition);
+  text-decoration:none;
+  white-space:nowrap;
+}
+.btn:disabled{opacity:0.45;cursor:not-allowed;}
+.btn-primary{
+  background:linear-gradient(135deg,var(--accent),#0ea5e9);
+  color:#000;
+  box-shadow:0 4px 15px rgba(56,189,248,0.3);
+}
+.btn-primary:hover:not(:disabled){
+  box-shadow:0 4px 25px rgba(56,189,248,0.5);
+  transform:translateY(-1px);
+}
+.btn-secondary{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  color:var(--text);
+}
+.btn-secondary:hover:not(:disabled){background:var(--surface);border-color:var(--border2);}
+.btn-ghost{
+  background:transparent;
+  border:1px solid var(--border);
+  color:var(--text2);
+}
+.btn-ghost:hover:not(:disabled){color:var(--text);border-color:var(--border2);}
+.btn-danger{
+  background:rgba(248,113,113,0.15);
+  border:1px solid rgba(248,113,113,0.3);
+  color:var(--red);
+}
+.btn-danger:hover:not(:disabled){background:rgba(248,113,113,0.25);}
+.btn-success{
+  background:rgba(52,211,153,0.15);
+  border:1px solid rgba(52,211,153,0.3);
+  color:var(--accent3);
+}
+.btn-sm{padding:0.45rem 0.9rem;font-size:0.8rem;}
+.btn-full{width:100%;}
+
+/* ─── RADIO TOGGLE ─── */
+.toggle-group{
+  display:flex;gap:0.5rem;
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  padding:0.3rem;
+}
+.toggle-option{
+  flex:1;padding:0.55rem;
+  border-radius:5px;
+  cursor:pointer;text-align:center;
+  font-size:0.82rem;font-weight:500;
+  color:var(--text3);
+  transition:all var(--transition);
+  user-select:none;
+}
+.toggle-option.active{
+  background:var(--surface);
+  color:var(--accent);
+  box-shadow:0 1px 4px rgba(0,0,0,0.3);
+}
+
+/* ─── STATUS BAR ─── */
+.status-bar{
+  padding:0.9rem 1.25rem;
+  border-radius:var(--radius-sm);
+  font-size:0.85rem;
+  display:flex;align-items:center;gap:0.6rem;
+  transition:all var(--transition);
+  min-height:44px;
+}
+.status-bar.idle{background:var(--bg3);color:var(--text3);border:1px solid var(--border);}
+.status-bar.loading{background:rgba(56,189,248,0.08);color:var(--accent);border:1px solid rgba(56,189,248,0.2);}
+.status-bar.success{background:rgba(52,211,153,0.08);color:var(--accent3);border:1px solid rgba(52,211,153,0.2);}
+.status-bar.error{background:rgba(248,113,113,0.08);color:var(--red);border:1px solid rgba(248,113,113,0.2);}
+.pulse-dot{
+  width:8px;height:8px;border-radius:50%;flex-shrink:0;
+  background:currentColor;
+  animation:pulse 1.5s ease infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+
+/* ─── RESPONSE AREA ─── */
+.response-area{
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  padding:1.25rem;
+  font-size:0.875rem;
+  line-height:1.8;
+  white-space:pre-wrap;
+  min-height:80px;
+  font-family:var(--mono);
+  color:var(--text2);
+  max-height:400px;
+  overflow-y:auto;
+}
+.response-area:empty::before{content:'// פלט יופיע כאן...';color:var(--text3);}
+
+/* ─── ACTION ITEMS ─── */
+.actions-list{
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  overflow:hidden;
+}
+.action-item{
+  display:flex;align-items:center;gap:1rem;
+  padding:0.9rem 1.25rem;
+  border-bottom:1px solid var(--border);
+  transition:background var(--transition);
+}
+.action-item:last-child{border-bottom:none;}
+.action-item:hover{background:var(--surface2);}
+.action-num{
+  width:28px;height:28px;
+  background:rgba(56,189,248,0.1);
+  border:1px solid rgba(56,189,248,0.2);
+  border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:0.75rem;
+  color:var(--accent);flex-shrink:0;
+}
+.action-desc{flex:1;font-size:0.875rem;}
+.action-detail{font-family:var(--mono);font-size:0.75rem;color:var(--text3);}
+.action-btn{
+  padding:0.35rem 0.8rem;font-size:0.75rem;font-weight:600;
+  background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.3);
+  color:var(--accent3);border-radius:5px;cursor:pointer;
+  transition:all var(--transition);font-family:var(--font);
+}
+.action-btn:hover{background:rgba(52,211,153,0.2);}
+.action-btn.reject{
+  background:rgba(248,113,113,0.1);border-color:rgba(248,113,113,0.3);color:var(--red);
+}
+.action-btn.reject:hover{background:rgba(248,113,113,0.2);}
+
+/* ─── FILE DROP ─── */
+.drop-zone{
+  border:2px dashed var(--border);
+  border-radius:var(--radius-sm);
+  padding:2rem;text-align:center;
+  cursor:pointer;
+  transition:all var(--transition);
+  color:var(--text3);
+}
+.drop-zone:hover,.drop-zone.dragover{
+  border-color:var(--accent);
+  background:rgba(56,189,248,0.05);
+  color:var(--accent);
+}
+.drop-zone .drop-icon{font-size:2rem;margin-bottom:0.5rem;}
+.file-chips{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.75rem;}
+.file-chip{
+  display:flex;align-items:center;gap:0.4rem;
+  padding:0.3rem 0.7rem;
+  background:rgba(56,189,248,0.1);
+  border:1px solid rgba(56,189,248,0.2);
+  border-radius:20px;font-size:0.78rem;color:var(--accent);
+}
+.file-chip .remove-chip{
+  cursor:pointer;opacity:0.6;
+  background:none;border:none;color:inherit;font-size:0.9rem;padding:0;
+  transition:opacity var(--transition);
+}
+.file-chip .remove-chip:hover{opacity:1;}
+
+/* ─── MODE BADGES ─── */
+.mode-selector{display:flex;gap:0.75rem;margin-bottom:1.5rem;flex-wrap:wrap;}
+.mode-card{
+  flex:1;min-width:150px;
+  padding:1rem;
+  border:2px solid var(--border);
+  border-radius:var(--radius-sm);
+  cursor:pointer;
+  transition:all var(--transition);
+  text-align:center;
+}
+.mode-card:hover{border-color:var(--border2);}
+.mode-card.active-mode{border-color:var(--accent);box-shadow:var(--neon);}
+.mode-card.active-mode.purple{border-color:var(--accent2);box-shadow:var(--neon2);}
+.mode-card.active-mode.green{border-color:var(--accent3);}
+.mode-dot{width:10px;height:10px;border-radius:50%;margin:0 auto 0.5rem;}
+.mode-dot.blue{background:var(--accent);}
+.mode-dot.purple{background:var(--accent2);}
+.mode-dot.green{background:var(--accent3);}
+.mode-title{font-weight:600;font-size:0.85rem;}
+.mode-desc{font-size:0.72rem;color:var(--text3);margin-top:0.2rem;}
+
+/* ─── HISTORY ─── */
+.history-item{
+  display:flex;align-items:center;gap:1rem;
+  padding:0.85rem 1.25rem;
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  margin-bottom:0.5rem;
+  cursor:pointer;
+  transition:all var(--transition);
+}
+.history-item:hover{border-color:var(--border2);background:var(--surface);}
+.history-item .h-icon{
+  width:32px;height:32px;
+  background:var(--surface2);
+  border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.9rem;
+}
+.history-item .h-meta{flex:1;}
+.history-item .h-title{font-size:0.875rem;font-weight:500;}
+.history-item .h-time{font-size:0.72rem;color:var(--text3);}
+.history-item .h-tag{
+  padding:2px 8px;border-radius:20px;font-size:0.7rem;
+}
+.h-tag.green{background:rgba(52,211,153,0.1);color:var(--accent3);}
+.h-tag.blue{background:rgba(56,189,248,0.1);color:var(--accent);}
+.h-tag.red{background:rgba(248,113,113,0.1);color:var(--red);}
+
+/* ─── IVR PREVIEW ─── */
+.ivr-tree{padding:1rem;}
+.ivr-node{
+  position:relative;
+  padding:0.7rem 1rem;
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  background:var(--surface);
+  font-size:0.82rem;font-family:var(--mono);
+  display:inline-block;white-space:nowrap;
+  margin-bottom:0.3rem;
+  transition:all var(--transition);
+}
+.ivr-node:hover{border-color:var(--accent);}
+.ivr-node.root{border-color:var(--accent);color:var(--accent);}
+.ivr-branch{margin-right:2rem;padding-right:1rem;border-right:1px solid var(--border);}
+
+/* ─── TTS ─── */
+.voice-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:0.75rem;}
+.voice-card{
+  padding:0.85rem;border:1px solid var(--border);border-radius:var(--radius-sm);
+  cursor:pointer;transition:all var(--transition);text-align:center;
+}
+.voice-card:hover{border-color:var(--border2);}
+.voice-card.selected{border-color:var(--accent2);background:rgba(129,140,248,0.08);}
+.voice-card .v-icon{font-size:1.5rem;margin-bottom:0.3rem;}
+.voice-card .v-name{font-size:0.8rem;font-weight:600;}
+.voice-card .v-lang{font-size:0.7rem;color:var(--text3);}
+
+.audio-player-custom{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:1rem 1.25rem;
+  display:flex;align-items:center;gap:1rem;
+}
+.audio-player-custom audio{flex:1;outline:none;height:36px;}
+
+/* ─── STATS ─── */
+.stat-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:1.25rem;
+}
+.stat-card .stat-val{font-size:2rem;font-weight:700;font-family:var(--mono);}
+.stat-card .stat-lbl{font-size:0.78rem;color:var(--text3);margin-top:0.2rem;}
+.stat-card .stat-trend{font-size:0.75rem;margin-top:0.5rem;}
+.stat-card .stat-trend.up{color:var(--accent3);}
+.stat-card .stat-trend.down{color:var(--red);}
+
+/* ─── SPINNER ─── */
+.spinner{
+  width:18px;height:18px;
+  border:2px solid rgba(56,189,248,0.3);
+  border-top-color:var(--accent);
+  border-radius:50%;
+  animation:spin 0.7s linear infinite;flex-shrink:0;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ─── MODAL ─── */
+.modal-overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.7);
+  backdrop-filter:blur(4px);
+  z-index:500;
+  display:flex;align-items:center;justify-content:center;
+  padding:1rem;
+  opacity:0;pointer-events:none;
+  transition:opacity var(--transition);
+}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal-box{
+  background:var(--bg2);
+  border:1px solid var(--border2);
+  border-radius:var(--radius);
+  padding:2rem;
+  width:100%;max-width:520px;
+  max-height:90vh;overflow-y:auto;
+  box-shadow:0 25px 60px rgba(0,0,0,0.5);
+  transform:translateY(10px);
+  transition:transform var(--transition);
+}
+.modal-overlay.open .modal-box{transform:translateY(0);}
+.modal-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:1.5rem;
+}
+.modal-title{font-size:1.1rem;font-weight:700;}
+.modal-close{
+  background:none;border:none;color:var(--text3);font-size:1.3rem;
+  cursor:pointer;transition:color var(--transition);
+  display:flex;align-items:center;
+}
+.modal-close:hover{color:var(--text);}
+
+/* ─── TAG ─── */
+.tag{
+  display:inline-flex;align-items:center;gap:0.3rem;
+  padding:3px 9px;border-radius:20px;font-size:0.72rem;font-weight:600;
+}
+.tag-blue{background:rgba(56,189,248,0.12);color:var(--accent);}
+.tag-purple{background:rgba(129,140,248,0.12);color:var(--accent2);}
+.tag-green{background:rgba(52,211,153,0.12);color:var(--accent3);}
+.tag-yellow{background:rgba(251,191,36,0.12);color:var(--yellow);}
+
+/* ─── CHECKBOX ─── */
+.checkbox-row{
+  display:flex;align-items:center;gap:0.6rem;
+  padding:0.6rem 0.8rem;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--radius-sm);cursor:pointer;
+  user-select:none;transition:all var(--transition);
+}
+.checkbox-row:hover{border-color:var(--border2);}
+.checkbox-row input[type=checkbox]{
+  width:auto;padding:0;background:none;border:none;
+  width:16px;height:16px;accent-color:var(--accent);cursor:pointer;
+}
+.checkbox-row span{font-size:0.875rem;flex:1;}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--surface2);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:var(--text3);}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:768px){
+  .sidebar{width:60px;min-width:60px;}
+  .sidebar .logo-text,.sidebar .logo-sub,.sidebar .nav-item span,.sidebar-label,.nav-badge{display:none;}
+  .grid-2,.grid-3{grid-template-columns:1fr;}
+  .col-span-2{grid-column:1;}
+  .page{padding:1rem;}
+  .topbar{padding:0.75rem 1rem;}
+}
+
+/* ─── SEPARATOR ─── */
+.sep{height:1px;background:var(--border);margin:1.25rem 0;}
+
+/* ─── CODE DISPLAY ─── */
+.code-block{
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:1rem;
+  font-family:var(--mono);font-size:0.8rem;
+  line-height:1.7;color:#a5f3fc;
+  overflow-x:auto;
+  max-height:300px;overflow-y:auto;
+}
+
+.divider{display:flex;align-items:center;gap:1rem;margin:1.25rem 0;color:var(--text3);font-size:0.8rem;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* Notification */
+.notif{
+  position:fixed;bottom:1.5rem;left:1.5rem;
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:var(--radius-sm);padding:0.8rem 1.25rem;
+  font-size:0.875rem;
+  box-shadow:0 8px 30px rgba(0,0,0,0.4);
+  z-index:9999;
+  transform:translateY(20px);opacity:0;
+  transition:all 0.3s ease;
+  display:flex;align-items:center;gap:0.5rem;
+  max-width:340px;
+}
+.notif.show{transform:translateY(0);opacity:1;}
+.notif.success{border-color:rgba(52,211,153,0.4);color:var(--accent3);}
+.notif.error{border-color:rgba(248,113,113,0.4);color:var(--red);}
+.notif.info{border-color:rgba(56,189,248,0.4);color:var(--accent);}
+</style>
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- ═══════════════ SIDEBAR ═══════════════ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-badge">
+        <div class="logo-icon">🤖</div>
+        <div>
+          <div class="logo-text">IVR AI Panel</div>
+          <div class="logo-sub">ימות המשיח v3.0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-label">ניווט ראשי</div>
+    <div class="sidebar-section">
+      <div class="nav-item active" data-page="home" onclick="navigate('home')">
+        <span class="nav-icon">⚡</span><span>לוח בקרה</span>
+      </div>
+      <div class="nav-item" data-page="ivr" onclick="navigate('ivr')">
+        <span class="nav-icon">📞</span><span>יצירת שלוחות</span>
+        <span class="nav-badge">AI</span>
+      </div>
+      <div class="nav-item" data-page="tts" onclick="navigate('tts')">
+        <span class="nav-icon">🎙️</span><span>קריינות TTS</span>
+        <span class="nav-badge purple">NEW</span>
+      </div>
+      <div class="nav-item" data-page="preview" onclick="navigate('preview')">
+        <span class="nav-icon">🗺️</span><span>מפת שלוחות</span>
+      </div>
+      <div class="nav-item" data-page="history" onclick="navigate('history')">
+        <span class="nav-icon">📋</span><span>היסטוריה</span>
+      </div>
+    </div>
+
+    <div class="sidebar-label">כלים</div>
+    <div class="sidebar-section">
+      <div class="nav-item" data-page="settings" onclick="navigate('settings')">
+        <span class="nav-icon">⚙️</span><span>הגדרות</span>
+      </div>
+      <div class="nav-item" onclick="openTokenModal()">
+        <span class="nav-icon">🔐</span><span>ניהול טוקן</span>
+      </div>
+    </div>
+
+    <div class="sidebar-bottom">
+      <div class="nav-item" id="themeToggleBtn" onclick="toggleTheme()" style="font-size:0.8rem;">
+        <span class="nav-icon" id="themeIcon">🌙</span><span>מצב כהה</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════════════ MAIN ═══════════════ -->
+  <div class="main-content">
+    
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="topbar-title">
+        <span id="topbarPage">לוח בקרה</span>
+        <span class="breadcrumb" id="topbarSub">IVR AI Control Panel</span>
+      </div>
+      <div class="topbar-actions">
+        <div class="tag tag-green" id="statusDot">● מחובר</div>
+        <button class="btn-icon" title="רענן" onclick="location.reload()">↻</button>
+      </div>
+    </header>
+
+    <!-- ═══ PAGE: HOME ═══ -->
+    <div class="page active" id="page-home">
+      <div class="page-header">
+        <h1>שלום! 👋</h1>
+        <p>לוח הבקרה של מערכת ה-AI לניהול שלוחות ימות המשיח</p>
+      </div>
+
+      <div class="grid-3" style="margin-bottom:1.5rem;">
+        <div class="stat-card">
+          <div class="stat-val" id="stat-requests">0</div>
+          <div class="stat-lbl">בקשות השיחה</div>
+          <div class="stat-trend up" id="stat-requests-trend">↑ סשן נוכחי</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="stat-success">0</div>
+          <div class="stat-lbl">פעולות בוצעו</div>
+          <div class="stat-trend up">✓ מוצלח</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="stat-tts">0</div>
+          <div class="stat-lbl">קבצי שמע</div>
+          <div class="stat-trend up">🎙 TTS</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">⚡</div>
+            <div>
+              <div class="card-title">פעולה מהירה</div>
+              <div class="card-subtitle">שלח בקשה מהירה ל-AI</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <textarea id="quickRequest" placeholder="לדוגמא: צור שלוחה ראשית עם 3 אפשרויות..." rows="3"></textarea>
+          </div>
+          <button class="btn btn-primary btn-full" onclick="navigate('ivr'); document.getElementById('mainRequest').value = document.getElementById('quickRequest').value;">
+            🚀 שלח לאשף IVR
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">📌</div>
+            <div>
+              <div class="card-title">קיצורי דרך</div>
+              <div class="card-subtitle">תבניות נפוצות</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0.5rem;">
+            <button class="btn btn-ghost btn-sm" onclick="setTemplate('שלוחה ראשית: תפריט עם שלוחות 1-5 כולל ניתוב לכל אחת')">📁 תפריט ראשי</button>
+            <button class="btn btn-ghost btn-sm" onclick="setTemplate('שלוחה להשארת הודעה עם אפשרות לשמיעה מחדש ואישור')">📩 השארת הודעה</button>
+            <button class="btn btn-ghost btn-sm" onclick="setTemplate('שלוחת שעות פעילות עם הודעה ב-open_time ו-close_time')">🕐 שעות פעילות</button>
+            <button class="btn btn-ghost btn-sm" onclick="setTemplate('שלוחה לאיסוף מספר טלפון מהמתקשר ושמירתו')">📱 איסוף נתונים</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE: IVR ═══ -->
+    <div class="page" id="page-ivr">
+      <div class="page-header">
+        <h1>📞 יצירת שלוחות AI</h1>
+        <p>תאר בעברית מה אתה רוצה — ה-AI יכתוב את הקוד ויבצע</p>
+      </div>
+
+      <!-- MODES -->
+      <div class="mode-selector">
+        <div class="mode-card active-mode" id="mode-normal" onclick="setMode('normal')">
+          <div class="mode-dot blue"></div>
+          <div class="mode-title">🟢 רגיל</div>
+          <div class="mode-desc">יצירת שלוחות</div>
+        </div>
+        <div class="mode-card" id="mode-advanced" onclick="setMode('advanced')">
+          <div class="mode-dot purple"></div>
+          <div class="mode-title">🔵 מתקדם</div>
+          <div class="mode-desc">שליטה בפרמטרים</div>
+        </div>
+        <div class="mode-card" id="mode-preview-only" onclick="setMode('preview-only')">
+          <div class="mode-dot green"></div>
+          <div class="mode-title">🟣 תצוגה מקדימה</div>
+          <div class="mode-desc">רק אישור ידני</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- LEFT: FORM -->
+        <div style="display:flex;flex-direction:column;gap:1.25rem;">
+          
+          <div class="card">
+            <div class="card-header">
+              <div class="card-icon">🤖</div>
+              <div><div class="card-title">מודל AI</div></div>
+            </div>
+            <div class="toggle-group" id="modelToggle">
+              <div class="toggle-option active" onclick="selectModel('regular',this)">⚡ מהיר</div>
+              <div class="toggle-option" onclick="selectModel('pro',this)">🎯 פרו</div>
+            </div>
+            <div id="apiKeySection" style="margin-top:1rem;display:none;">
+              <label class="form-label">🔑 מפתח API (Google)</label>
+              <input type="password" id="apiKeyInput" placeholder="AIza...">
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-icon">🔐</div>
+              <div>
+                <div class="card-title">טוקן ימות המשיח</div>
+                <div class="card-subtitle" id="tokenStatus">לא מוגדר</div>
+              </div>
+            </div>
+            <div class="input-group-inline">
+              <input type="password" id="tokenInput" placeholder="הזן טוקן...">
+              <button class="btn btn-secondary btn-sm" onclick="openTokenModal()">🔐 אימות</button>
+            </div>
+            <div style="display:flex;gap:0.5rem;margin-top:0.5rem;">
+              <button class="btn btn-ghost btn-sm" onclick="saveTokenNow()">💾 שמור</button>
+              <button class="btn btn-danger btn-sm" onclick="clearToken()">🗑 מחק</button>
+            </div>
+          </div>
+
+          <!-- FILES -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-icon">📎</div>
+              <div><div class="card-title">קבצים לשיתוף עם AI</div><div class="card-subtitle">גרור או לחץ להעלאה</div></div>
+            </div>
+            <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+              <div class="drop-icon">📂</div>
+              <div>גרור קבצים לכאן או לחץ לבחירה</div>
+              <div style="font-size:0.75rem;margin-top:0.3rem;color:var(--text3)">txt, json, html, js</div>
+            </div>
+            <input type="file" id="fileInput" multiple accept=".txt,.json,.html,.js" style="display:none" onchange="handleFiles(this.files)">
+            <div class="file-chips" id="fileChips"></div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT: REQUEST + RESPONSE -->
+        <div style="display:flex;flex-direction:column;gap:1.25rem;">
+          
+          <div class="card" style="flex:1;">
+            <div class="card-header">
+              <div class="card-icon">💬</div>
+              <div><div class="card-title">הבקשה שלך</div></div>
+            </div>
+            <div class="form-group">
+              <textarea id="mainRequest" rows="6" placeholder="תאר מה אתה רוצה לבנות...
+
+לדוגמא:
+צור שלוחה ראשית עם תפריט שמנגן הודעת ברכה (M0000) ואז מציע שלוחות 1-3. שלוחה 1 ניתוב לשלוחה 100, שלוחה 2 השארת הודעה, שלוחה 3 ניגון קובץ מספר 200."></textarea>
+            </div>
+
+            <!-- ADVANCED OPTIONS -->
+            <div id="advancedOptions" style="display:none;">
+              <div class="sep"></div>
+              <div style="font-size:0.8rem;font-weight:600;color:var(--text2);margin-bottom:0.75rem;">⚙️ פרמטרים מתקדמים</div>
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label">שלוחה התחלה</label>
+                  <input type="text" id="startExt" placeholder="0">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">מקסימום שגיאות</label>
+                  <input type="text" id="maxErrors" placeholder="3">
+                </div>
+              </div>
+            </div>
+
+            <div class="checkbox-row" style="margin-bottom:1rem;">
+              <input type="checkbox" id="previewMode">
+              <span>🛡️ אישור ידני לפני ביצוע (בטיחותי)</span>
+            </div>
+            <button class="btn btn-primary btn-full" id="submitBtn" onclick="submitRequest()">
+              🚀 שלח לAI
+            </button>
+          </div>
+
+          <!-- RESPONSE -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-icon">📡</div>
+              <div><div class="card-title">סטטוס / תגובה</div></div>
+            </div>
+            <div class="status-bar idle" id="mainStatus">
+              <span>ממתין לבקשה...</span>
+            </div>
+            <div style="margin-top:0.75rem;">
+              <div class="response-area" id="responseArea"></div>
+            </div>
+            <div id="actionsContainer" style="display:none;margin-top:0.75rem;">
+              <div class="divider">פעולות לאישור</div>
+              <div class="actions-list" id="actionsList"></div>
+              <div style="display:flex;gap:0.5rem;margin-top:0.75rem;">
+                <button class="btn btn-success" onclick="approveAll()">✅ אשר הכל</button>
+                <button class="btn btn-danger" onclick="rejectAll()">❌ בטל הכל</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE: TTS ═══ -->
+    <div class="page" id="page-tts">
+      <div class="page-header">
+        <h1>🎙️ מערכת קריינות TTS</h1>
+        <p>הפקת קבצי שמע עם Gemini 2.5 Flash TTS</p>
+      </div>
+
+      <div class="grid-2">
+        <div style="display:flex;flex-direction:column;gap:1.25rem;">
+          
+          <div class="card">
+            <div class="card-header">
+              <div class="card-icon">🔑</div>
+              <div><div class="card-title">מפתח Google AI</div></div>
+            </div>
+            <input type="password" id="ttsApiKey" placeholder="מפתח Google AI Studio...">
+            <div style="margin-top:0.5rem;">
+              <a href="https://aistudio.google.com/u/0/api-keys" target="_blank" class="btn btn-ghost btn-sm">קבל מפתח חינמי ↗</a>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-icon">🎭</div>
+              <div><div class="card-title">הגדרות קול</div></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">סוג קריינות</label>
+              <select id="speakersConfig">
+                <option value="male_female">גבר + אישה</option>
+                <option value="two_males">שני גברים</option>
+                <option value="two_females">שתי נשים</option>
+                <option value="single">קריין יחיד</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">קול לקריין יחיד</label>
+              <select id="singleVoice">
+                <option value="Sadaltager">Sadaltager (גבר)</option>
+                <option value="Kore">Kore (אישה)</option>
+                <option value="Aoede">Aoede (אישה)</option>
+                <option value="Charon">Charon (גבר)</option>
+                <option value="Fenrir">Fenrir (גבר)</option>
+                <option value="Pulcherrima">Pulcherrima (אישה)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-icon">🤖</div>
+              <div><div class="card-title">יצירת תסריט עם AI</div></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">נושא</label>
+              <input type="text" id="ttsAiTopic" placeholder="לדוגמא: שמע ישראל לשבת...">
+            </div>
+            <div class="form-group">
+              <label class="form-label">אורך / סגנון</label>
+              <select id="ttsStyle">
+                <option value="short">קצר (30 שנ')</option>
+                <option value="medium" selected>בינוני (1-2 דקות)</option>
+                <option value="long">ארוך (3-5 דקות)</option>
+                <option value="ivr">הודעת IVR קצרה</option>
+              </select>
+            </div>
+            <button class="btn btn-secondary btn-full" id="genScriptBtn" onclick="generateTTSScript()">
+              ✨ צור תסריט עם AI
+            </button>
+            <div class="status-bar idle" id="scriptStatus" style="margin-top:0.75rem;font-size:0.8rem;">
+              ממתין...
+            </div>
+          </div>
+
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:1.25rem;">
+          <div class="card" style="flex:1;">
+            <div class="card-header">
+              <div class="card-icon">📝</div>
+              <div><div class="card-title">תסריט</div><div class="card-subtitle">לדו-שיח: <code style="background:var(--bg3);padding:1px 4px;border-radius:3px;font-size:0.75rem;">man:</code> / <code style="background:var(--bg3);padding:1px 4px;border-radius:3px;font-size:0.75rem;">girl:</code></div></div>
+            </div>
+            <textarea id="ttsScript" rows="10" placeholder="הזן תסריט כאן...
+
+לדו-שיח:
+man: שלום וברכה לכל מאזינינו הנכבדים
+girl: היום נדבר על...
+
+לקריין יחיד:
+פשוט כתוב את הטקסט ישירות"></textarea>
+            <div style="display:flex;gap:0.5rem;margin-top:0.75rem;flex-wrap:wrap;">
+              <button class="btn btn-primary" id="genAudioBtn" onclick="generateTTSAudio()">🔊 הפק שמע</button>
+              <button class="btn btn-ghost btn-sm" onclick="copyScript()">📋 העתק</button>
+              <button class="btn btn-ghost btn-sm" onclick="downloadScript()">⬇️ שמור txt</button>
+            </div>
+          </div>
+
+          <div class="card" id="audioResultCard" style="display:none;">
+            <div class="card-header">
+              <div class="card-icon">🎵</div>
+              <div><div class="card-title">קובץ שמע מוכן</div></div>
+            </div>
+            <div class="status-bar success" style="margin-bottom:0.75rem;">
+              <div class="pulse-dot"></div> השמע הופק בהצלחה!
+            </div>
+            <audio id="audioPlayer" controls style="width:100%;border-radius:8px;"></audio>
+            <a id="downloadLink" class="btn btn-success btn-full" style="margin-top:0.75rem;text-decoration:none;" download>⬇️ הורד WAV</a>
+          </div>
+          <div class="status-bar idle" id="audioStatus" style="margin-top:0rem;">ממתין...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE: PREVIEW ═══ -->
+    <div class="page" id="page-preview">
+      <div class="page-header">
+        <h1>🗺️ מפת שלוחות</h1>
+        <p>סימולציה חזותית של מבנה ה-IVR</p>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">🌳</div>
+          <div><div class="card-title">עץ שלוחות IVR</div></div>
+        </div>
+        <div id="ivrTreeContainer">
+          <div style="color:var(--text3);font-size:0.875rem;text-align:center;padding:2rem;">
+            שלח בקשה בדף "יצירת שלוחות" כדי לראות את מפת השלוחות
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:1.25rem;">
+        <div class="card-header">
+          <div class="card-icon">🔍</div>
+          <div><div class="card-title">חיפוש הודעת מערכת</div><div class="card-subtitle">בסיס הנתונים של ימות המשיח</div></div>
+        </div>
+        <div class="input-group-inline">
+          <input type="text" id="mSearch" placeholder="חפש קוד M, לדוגמא: M1000">
+          <button class="btn btn-primary btn-sm" onclick="searchM()">🔍 חפש</button>
+        </div>
+        <div id="mSearchResult" style="margin-top:0.75rem;"></div>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE: HISTORY ═══ -->
+    <div class="page" id="page-history">
+      <div class="page-header">
+        <h1>📋 היסטוריה</h1>
+        <p>בקשות וקבצי שמע שנוצרו בסשן זה</p>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+        <div class="tag tag-blue" id="historyCount">0 פריטים</div>
+        <button class="btn btn-danger btn-sm" onclick="clearHistory()">🗑️ נקה הכל</button>
+      </div>
+      <div id="historyList">
+        <div style="text-align:center;color:var(--text3);padding:3rem;font-size:0.875rem;">
+          אין עדיין היסטוריה בסשן זה
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE: SETTINGS ═══ -->
+    <div class="page" id="page-settings">
+      <div class="page-header">
+        <h1>⚙️ הגדרות</h1>
+        <p>הגדר את ה-API endpoint והגדרות מתקדמות</p>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">🌐</div>
+            <div><div class="card-title">API Endpoint</div></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">כתובת ה-Google Apps Script</label>
+            <input type="text" id="apiEndpoint" placeholder="https://script.google.com/macros/s/...">
+            <div style="font-size:0.75rem;color:var(--text3);margin-top:0.4rem;">הכתובת הציבורית של ה-Google Apps Script שלך</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">כתובת ימות המשיח API</label>
+            <input type="text" id="yemotBase" value="https://www.call2all.co.il/ym/api/" placeholder="https://www.call2all.co.il/ym/api/">
+          </div>
+          <button class="btn btn-primary" onclick="saveSettings()">💾 שמור הגדרות</button>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">🔒</div>
+            <div><div class="card-title">אבטחה</div></div>
+          </div>
+          <div class="checkbox-row" style="margin-bottom:0.5rem;">
+            <input type="checkbox" id="rememberToken" checked>
+            <span>זכור טוקן בדפדפן</span>
+          </div>
+          <div class="checkbox-row" style="margin-bottom:0.5rem;">
+            <input type="checkbox" id="defaultPreview">
+            <span>תמיד בקש אישור לפני ביצוע</span>
+          </div>
+          <div class="checkbox-row">
+            <input type="checkbox" id="saveHistory" checked>
+            <span>שמור היסטוריה בסשן</span>
+          </div>
+          <div class="sep"></div>
+          <button class="btn btn-danger btn-sm" onclick="clearAllData()">🗑️ נקה כל הנתונים</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /app-layout -->
+
+<!-- ═══ MODAL: TOKEN ═══ -->
+<div class="modal-overlay" id="tokenModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">🔐 יצירת טוקן מאומת</div>
+      <button class="modal-close" onclick="closeTokenModal()">✕</button>
+    </div>
+    
+    <div id="modalLoginPanel">
+      <div class="form-group">
+        <label class="form-label">מספר מערכת</label>
+        <input type="text" id="modalUsername" placeholder="מספר ימות המשיח">
+      </div>
+      <div class="form-group">
+        <label class="form-label">סיסמה</label>
+        <input type="password" id="modalPassword" placeholder="סיסמת ניהול">
+      </div>
+      <div class="checkbox-row" style="margin-bottom:1rem;">
+        <input type="checkbox" id="logoutAfter" checked>
+        <span>התנתק לאחר שליחה</span>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="handleLogin()">🔑 כניסה</button>
+      <div class="status-bar idle" id="loginStatus" style="margin-top:0.75rem;font-size:0.8rem;">ממתין...</div>
+    </div>
+
+    <div id="modalMfaPanel" style="display:none;">
+      <div class="form-group">
+        <label class="form-label">שיטת אימות</label>
+        <select id="mfaMethods"></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">סוג שליחה</label>
+        <select id="mfaSendType"></select>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="sendMfaCode()">📲 שלח קוד</button>
+      <div id="mfaCodeSection" style="display:none;margin-top:1rem;">
+        <div class="form-group">
+          <label class="form-label">קוד אימות</label>
+          <input type="text" id="mfaCode" placeholder="הזן קוד...">
+        </div>
+        <button class="btn btn-primary btn-full" onclick="validateMfa()">✅ אמת</button>
+      </div>
+      <div class="status-bar idle" id="mfaStatus" style="margin-top:0.75rem;font-size:0.8rem;">ממתין...</div>
+    </div>
+
+    <div id="modalSuccessPanel" style="display:none;text-align:center;padding:1rem;">
+      <div style="font-size:2.5rem;margin-bottom:0.75rem;">✅</div>
+      <div style="font-size:1.1rem;font-weight:700;color:var(--accent3);">אימות הושלם!</div>
+      <div style="color:var(--text2);font-size:0.875rem;margin-top:0.5rem;">הטוקן נשמר בהצלחה</div>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIFICATION -->
+<div class="notif" id="notif"></div>
+
+<script>
+// ═══════════════════════════════
+// CONSTANTS & STATE
+// ═══════════════════════════════
+const API_BASE = 'https://www.call2all.co.il/ym/api/';
+const TOKEN_KEY = 'ivr_token';
+const SETTINGS_KEY = 'ivr_settings';
+
+let currentMode = 'normal';
+let currentModel = 'regular';
+let uploadedFiles = [];
+let historyItems = [];
+let mfaMethodsCache = [];
+let loginToken = null;
+let ttsAudioUrl = null;
+let stats = {requests:0, success:0, tts:0};
+
+const REQUIRES_HARD_MFA = ['INIT_WHITELIST_IPS','HAVE_ACTIVE_TRUST_TOKEN'];
+
+// M-codes database (partial)
+const M_CODES = {
+  'M0000':'הודעת ברוכים הבאים - הודעה ראשונה בשלוחה',
+  'M0099':'הודעה אחרונה בשלוחה',
+  'M1000':'תפריט - אנא הקישו את מספר השלוחה',
+  'M1001':'המקש שֶהוֹקַש שגוי',
+  'M1002':'לא הוקשה בחירה',
+  'M1005':'סוף הודעות',
+  'M1006':'beep',
+  'M1009':'לשמיעת ההקלטה הקישו 1. לאישור ההקלטה הקישו 2',
+  'M1012':'אנא הקליטו את הודעתכם לאחר הצליל',
+  'M1041':'המענה סגור כעת, אנא נסו שוב בשעות הפעילות',
+  'M1042':'שלוחה זו אינה מוגדרת במערכת',
+  'M1060':'אנא השאירו הודעתכם לאחר הצליל',
+  'M1100':'נא הקש את הסיסמה',
+  'M1101':'סיסמה שגויה',
+};
+
+// ═══════════════════════════════
+// INIT
+// ═══════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  loadSettings();
+  loadToken();
+  updateTokenStatus();
+  loadSettingsFields();
+});
+
+// ═══════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════
+const pageTitles = {
+  home:'לוח בקרה', ivr:'יצירת שלוחות', tts:'קריינות TTS',
+  preview:'מפת שלוחות', history:'היסטוריה', settings:'הגדרות'
+};
+
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const p = document.getElementById('page-'+page);
+  if(p) p.classList.add('active');
+  const n = document.querySelector(`[data-page="${page}"]`);
+  if(n) n.classList.add('active');
+  document.getElementById('topbarPage').textContent = pageTitles[page]||page;
+  if(page==='history') renderHistory();
+}
+
+// ═══════════════════════════════
+// THEME
+// ═══════════════════════════════
+function toggleTheme() {
+  const isDark = document.documentElement.dataset.theme !== 'light';
+  document.documentElement.dataset.theme = isDark ? 'light' : '';
+  document.getElementById('themeIcon').textContent = isDark ? '☀️' : '🌙';
+  document.querySelector('[data-page]~div .nav-item:last-child span, .sidebar-bottom .nav-item span') && (
+    document.querySelectorAll('.sidebar-bottom .nav-item span')[0].textContent = isDark ? 'מצב בהיר' : 'מצב כהה'
+  );
+}
+
+// ═══════════════════════════════
+// MODEL / MODE
+// ═══════════════════════════════
+function selectModel(model, el) {
+  currentModel = model;
+  document.querySelectorAll('#modelToggle .toggle-option').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('apiKeySection').style.display = model==='pro' ? 'block' : 'none';
+  saveSettings();
+}
+
+function setMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('active-mode','purple','green'));
+  const card = document.getElementById('mode-'+mode);
+  if(mode==='normal') card.classList.add('active-mode');
+  if(mode==='advanced') { card.classList.add('active-mode','purple'); document.getElementById('advancedOptions').style.display='block'; }
+  else document.getElementById('advancedOptions').style.display='none';
+  if(mode==='preview-only') { card.classList.add('active-mode','green'); document.getElementById('previewMode').checked=true; }
+}
+
+// ═══════════════════════════════
+// TOKEN
+// ═══════════════════════════════
+function loadToken() {
+  const t = localStorage.getItem(TOKEN_KEY);
+  if(t) { document.getElementById('tokenInput').value=t; }
+}
+function saveTokenNow() {
+  const t = document.getElementById('tokenInput').value;
+  if(t) { localStorage.setItem(TOKEN_KEY,t); notify('טוקן נשמר','success'); updateTokenStatus(); }
+}
+function clearToken() {
+  localStorage.removeItem(TOKEN_KEY);
+  document.getElementById('tokenInput').value='';
+  updateTokenStatus();
+  notify('טוקן נמחק','info');
+}
+function updateTokenStatus() {
+  const t = document.getElementById('tokenInput').value || localStorage.getItem(TOKEN_KEY);
+  const el = document.getElementById('tokenStatus');
+  if(t) { el.textContent='✓ מוגדר'; el.style.color='var(--accent3)'; document.getElementById('statusDot').textContent='● מחובר'; document.getElementById('statusDot').className='tag tag-green'; }
+  else { el.textContent='לא מוגדר'; el.style.color='var(--red)'; document.getElementById('statusDot').textContent='○ לא מחובר'; document.getElementById('statusDot').className='tag tag-yellow'; }
+}
+
+// ═══════════════════════════════
+// SETTINGS
+// ═══════════════════════════════
+function loadSettings() {
+  try {
+    const s = JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}');
+    if(s.endpoint) { /* stored */ }
+    if(s.previewMode) document.getElementById('previewMode') && (document.getElementById('previewMode').checked=true);
+  } catch(e){}
+}
+function loadSettingsFields() {
+  try {
+    const s = JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}');
+    if(s.endpoint && document.getElementById('apiEndpoint')) document.getElementById('apiEndpoint').value=s.endpoint;
+    if(s.ttsKey && document.getElementById('ttsApiKey')) document.getElementById('ttsApiKey').value=s.ttsKey;
+    if(s.apiKey && document.getElementById('apiKeyInput')) document.getElementById('apiKeyInput').value=s.apiKey;
+  } catch(e){}
+}
+function saveSettings() {
+  const s = {
+    endpoint: document.getElementById('apiEndpoint')?.value||'',
+    ttsKey: document.getElementById('ttsApiKey')?.value||'',
+    apiKey: document.getElementById('apiKeyInput')?.value||'',
+  };
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
+  notify('הגדרות נשמרו','success');
+}
+function clearAllData() {
+  if(!confirm('למחוק את כל הנתונים?')) return;
+  localStorage.clear(); location.reload();
+}
+
+// ═══════════════════════════════
+// FILES
+// ═══════════════════════════════
+const dropZone = document.getElementById('dropZone');
+dropZone.addEventListener('dragover', e=>{e.preventDefault();dropZone.classList.add('dragover');});
+dropZone.addEventListener('dragleave', ()=>dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', e=>{e.preventDefault();dropZone.classList.remove('dragover');handleFiles(e.dataTransfer.files);});
+
+function handleFiles(files) {
+  Array.from(files).forEach(f => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      uploadedFiles.push({name:f.name, content:e.target.result, size:f.size});
+      renderFileChips();
+    };
+    reader.readAsText(f);
+  });
+}
+function renderFileChips() {
+  const c = document.getElementById('fileChips');
+  c.innerHTML = uploadedFiles.map((f,i)=>`
+    <div class="file-chip">
+      📄 ${f.name} <span style="opacity:0.5">(${Math.round(f.size/1024)}k)</span>
+      <button class="remove-chip" onclick="removeFile(${i})">✕</button>
+    </div>`).join('');
+}
+function removeFile(i) { uploadedFiles.splice(i,1); renderFileChips(); }
+
+// ═══════════════════════════════
+// MAIN IVR REQUEST
+// ═══════════════════════════════
+async function submitRequest() {
+  const token = document.getElementById('tokenInput').value || localStorage.getItem(TOKEN_KEY);
+  const request = document.getElementById('mainRequest').value.trim();
+  const preview = document.getElementById('previewMode').checked;
+
+  if(!token) { notify('חסר טוקן ימות המשיח!','error'); return; }
+  if(!request) { notify('כתוב בקשה תחילה','error'); return; }
+
+  const endpoint = (() => {
+    try { return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}').endpoint; } catch(e){return '';}
+  })();
+
+  if(!endpoint) { notify('הגדר API Endpoint בהגדרות תחילה!','error'); navigate('settings'); return; }
+
+  setStatus('loading','🤖 שולח לAI...');
+  document.getElementById('submitBtn').disabled = true;
+  document.getElementById('responseArea').textContent = '';
+  document.getElementById('actionsContainer').style.display='none';
+
+  stats.requests++;
+  document.getElementById('stat-requests').textContent = stats.requests;
+
+  // Build context with file contents
+  let fileContext = '';
+  if(uploadedFiles.length > 0) {
+    fileContext = '\n\n--- קבצים מצורפים ---\n';
+    uploadedFiles.forEach(f => {
+      fileContext += `\n[קובץ: ${f.name}]\n${f.content.substring(0,3000)}\n`;
+    });
+  }
+
+  const selectedModel = currentModel==='pro' ? 'pro' : 'regular';
+  const apiKey = document.getElementById('apiKeyInput').value;
+
+  const payload = {
+    text: request + fileContext,
+    token: token,
+    model: selectedModel,
+    apiType: apiKey ? 'private' : 'public',
+    apiKey: apiKey,
+    previewMode: preview,
+  };
+
+  try {
+    const res = await fetch(endpoint, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(payload),
+      mode:'cors'
+    });
+
+    let data;
+    try { data = await res.json(); } catch(e) { const t = await res.text(); data = {status:'error',message:t}; }
+
+    if(data.status==='ok' || data.actions) {
+      setStatus('success','✅ הבקשה עובדה בהצלחה');
+      stats.success++;
+      document.getElementById('stat-success').textContent = stats.success;
+
+      if(data.actions && data.actions.length > 0 && preview) {
+        renderActions(data.actions);
+        document.getElementById('actionsContainer').style.display='block';
+      }
+      if(data.message) document.getElementById('responseArea').textContent = data.message;
+      
+      addToHistory({type:'ivr', title:request.substring(0,60), status:'success', time:new Date()});
+      buildIVRPreview(data.actions||[]);
+    } else {
+      setStatus('error','❌ '+(data.message||'שגיאה'));
+      document.getElementById('responseArea').textContent = JSON.stringify(data, null, 2);
+      addToHistory({type:'ivr', title:request.substring(0,60), status:'error', time:new Date()});
+    }
+
+  } catch(e) {
+    setStatus('error','❌ שגיאת רשת: '+e.message);
+    document.getElementById('responseArea').textContent = e.toString();
+  } finally {
+    document.getElementById('submitBtn').disabled = false;
+  }
+}
+
+// ═══════════════════════════════
+// ACTIONS
+// ═══════════════════════════════
+function renderActions(actions) {
+  const list = document.getElementById('actionsList');
+  list.innerHTML = actions.map((a,i)=>`
+    <div class="action-item" id="action-${i}">
+      <div class="action-num">${i+1}</div>
+      <div>
+        <div class="action-desc">${a.description||a.action||JSON.stringify(a)}</div>
+        <div class="action-detail">${a.ext||''} ${a.type||''}</div>
+      </div>
+      <button class="action-btn" onclick="approveAction(${i},${JSON.stringify(a).replace(/"/g,'&quot;')})">✓ בצע</button>
+      <button class="action-btn reject" onclick="rejectAction(${i})">✕</button>
+    </div>`).join('');
+}
+
+function approveAction(i, action) {
+  const btn = document.querySelector(`#action-${i} .action-btn`);
+  if(btn) { btn.textContent='⏳...'; btn.disabled=true; }
+  // Here you'd call the actual API
+  setTimeout(() => {
+    const row = document.getElementById('action-'+i);
+    if(row) row.style.opacity='0.4';
+    notify('פעולה '+( i+1)+' בוצעה','success');
+  }, 500);
+}
+function rejectAction(i) {
+  const row = document.getElementById('action-'+i);
+  if(row) { row.style.opacity='0.3'; row.style.textDecoration='line-through'; }
+}
+function approveAll() {
+  document.querySelectorAll('.action-btn:not(.reject)').forEach((b,i)=>{
+    setTimeout(()=>b.click(), i*200);
+  });
+}
+function rejectAll() {
+  document.querySelectorAll('.action-btn.reject').forEach(b=>b.click());
+}
+
+// ═══════════════════════════════
+// STATUS
+// ═══════════════════════════════
+function setStatus(type, msg) {
+  const el = document.getElementById('mainStatus');
+  el.className = 'status-bar '+type;
+  el.innerHTML = type==='loading' ? `<div class="spinner"></div> ${msg}` :
+                 type==='success' ? `<div class="pulse-dot"></div> ${msg}` :
+                 type==='error'   ? `⚠️ ${msg}` : msg;
+}
+
+// ═══════════════════════════════
+// IVR PREVIEW
+// ═══════════════════════════════
+function buildIVRPreview(actions) {
+  const c = document.getElementById('ivrTreeContainer');
+  if(!actions||!actions.length) return;
+  c.innerHTML = `<div class="ivr-tree">
+    <div class="ivr-node root">📞 שלוחה ראשית</div>
+    <div class="ivr-branch" style="margin-top:0.5rem;">
+      ${actions.map(a=>`<div class="ivr-node" style="display:block;margin-bottom:0.3rem;">
+        🔹 ${a.ext||'?'} — ${a.description||a.type||''}
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════
+// M-CODE SEARCH
+// ═══════════════════════════════
+function searchM() {
+  const q = document.getElementById('mSearch').value.trim().toUpperCase();
+  const res = document.getElementById('mSearchResult');
+  const found = Object.entries(M_CODES).filter(([k,v])=>k.includes(q)||v.includes(q));
+  if(!found.length) { res.innerHTML='<div style="color:var(--text3);font-size:0.875rem;">לא נמצא</div>'; return; }
+  res.innerHTML = found.map(([k,v])=>`
+    <div style="display:flex;gap:0.75rem;align-items:flex-start;padding:0.6rem 0;border-bottom:1px solid var(--border);">
+      <span class="tag tag-blue">${k}</span>
+      <span style="font-size:0.875rem;color:var(--text2)">${v}</span>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════
+// TEMPLATES
+// ═══════════════════════════════
+function setTemplate(t) {
+  navigate('ivr');
+  document.getElementById('mainRequest').value = t;
+}
+
+// ═══════════════════════════════
+// TTS
+// ═══════════════════════════════
+async function generateTTSScript() {
+  const topic = document.getElementById('ttsAiTopic').value.trim();
+  const style = document.getElementById('ttsStyle').value;
+  const speakers = document.getElementById('speakersConfig').value;
+  if(!topic) { notify('הזן נושא תחילה','error'); return; }
+
+  const styleMap = {short:'קצר, כ-30 שניות', medium:'בינוני, 1-2 דקות', long:'ארוך, 3-5 דקות', ivr:'הודעת IVR קצרה ומקצועית'};
+  const speakerMap = {male_female:'דו-שיח בין גבר (man:) ואישה (girl:)', two_males:'דו-שיח בין שני גברים (speaker1: ו-speaker2:)', two_females:'דו-שיח בין שתי נשים (speaker1: ו-speaker2:)', single:'קריין יחיד (ללא תגיות)'};
+
+  const prompt = `כתוב תסריט ${styleMap[style]} בנושא: "${topic}". ${speakerMap[speakers]}. כתוב בעברית, בסגנון טבעי ורהוט.`;
+  
+  setScriptStatus('loading','✨ כותב תסריט...');
+  document.getElementById('genScriptBtn').disabled = true;
+
+  try {
+    const apiKey = document.getElementById('ttsApiKey').value || (() => { try { return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}').ttsKey; } catch(e){return '';}} )();
+    if(!apiKey) { setScriptStatus('error','חסר מפתח Google AI'); document.getElementById('genScriptBtn').disabled=false; return; }
+
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({contents:[{parts:[{text:prompt}]}]})
+    });
+    const data = await res.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if(text) {
+      document.getElementById('ttsScript').value = text;
+      setScriptStatus('success','✅ תסריט נוצר!');
+      addToHistory({type:'script', title:topic, status:'success', time:new Date()});
+    } else {
+      setScriptStatus('error','שגיאה בקבלת תסריט');
+    }
+  } catch(e) {
+    setScriptStatus('error','❌ '+e.message);
+  } finally {
+    document.getElementById('genScriptBtn').disabled = false;
+  }
+}
+
+async function generateTTSAudio() {
+  const script = document.getElementById('ttsScript').value.trim();
+  const speakersChoice = document.getElementById('speakersConfig').value;
+  const singleVoice = document.getElementById('singleVoice').value;
+  if(!script) { notify('הזן תסריט תחילה','error'); return; }
+
+  const apiKey = document.getElementById('ttsApiKey').value || (() => { try { return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}').ttsKey; } catch(e){return '';}} )();
+  if(!apiKey) { notify('חסר מפתח Google AI','error'); return; }
+
+  setAudioStatus('loading','🎙️ מייצר שמע...');
+  document.getElementById('genAudioBtn').disabled=true;
+  document.getElementById('audioResultCard').style.display='none';
+
+  let speechConfig;
+  switch(speakersChoice) {
+    case 'two_males': speechConfig={multiSpeakerVoiceConfig:{speakerVoiceConfigs:[{speaker:'speaker1',voiceConfig:{prebuiltVoiceConfig:{voiceName:'Sadaltager'}}},{speaker:'speaker2',voiceConfig:{prebuiltVoiceConfig:{voiceName:'Charon'}}}]}}; break;
+    case 'two_females': speechConfig={multiSpeakerVoiceConfig:{speakerVoiceConfigs:[{speaker:'speaker1',voiceConfig:{prebuiltVoiceConfig:{voiceName:'Kore'}}},{speaker:'speaker2',voiceConfig:{prebuiltVoiceConfig:{voiceName:'Aoede'}}}]}}; break;
+    case 'single': speechConfig={voiceConfig:{prebuiltVoiceConfig:{voiceName:singleVoice}}}; break;
+    default: speechConfig={multiSpeakerVoiceConfig:{speakerVoiceConfigs:[{speaker:'man',voiceConfig:{prebuiltVoiceConfig:{voiceName:'Sadaltager'}}},{speaker:'girl',voiceConfig:{prebuiltVoiceConfig:{voiceName:'Kore'}}}]}};
+  }
+
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${encodeURIComponent(apiKey)}`,{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({contents:[{parts:[{text:script}]}],generationConfig:{responseModalities:['AUDIO'],speechConfig}})
+    });
+    if(!res.ok) { const d=await res.json(); throw new Error(d.error?.message||res.status); }
+    const data = await res.json();
+    const audioPart = data.candidates?.[0]?.content?.parts?.find(p=>p.inlineData);
+    if(!audioPart) throw new Error('לא התקבל אודיו');
+
+    const pcm = Uint8Array.from(atob(audioPart.inlineData.data), c=>c.charCodeAt(0));
+    const wav = createWav(pcm);
+    const url = URL.createObjectURL(wav);
+    if(ttsAudioUrl) URL.revokeObjectURL(ttsAudioUrl);
+    ttsAudioUrl = url;
+
+    document.getElementById('audioPlayer').src = url;
+    document.getElementById('downloadLink').href = url;
+    document.getElementById('downloadLink').download = `tts_${Date.now()}.wav`;
+    document.getElementById('audioResultCard').style.display='block';
+    setAudioStatus('success','🎵 שמע מוכן!');
+    stats.tts++;
+    document.getElementById('stat-tts').textContent = stats.tts;
+    addToHistory({type:'tts', title:'קובץ שמע', status:'success', time:new Date()});
+  } catch(e) {
+    setAudioStatus('error','❌ '+e.message);
+  } finally {
+    document.getElementById('genAudioBtn').disabled=false;
+  }
+}
+
+function setScriptStatus(type, msg) {
+  const el = document.getElementById('scriptStatus');
+  el.className='status-bar '+type;
+  el.textContent = msg;
+}
+function setAudioStatus(type, msg) {
+  const el = document.getElementById('audioStatus');
+  el.className='status-bar '+type;
+  el.textContent = msg;
+}
+
+function createWav(pcm) {
+  const buf = new ArrayBuffer(44+pcm.length);
+  const v = new DataView(buf);
+  const ws=(off,str)=>{for(let i=0;i<str.length;i++)v.setUint8(off+i,str.charCodeAt(i));};
+  ws(0,'RIFF'); v.setUint32(4,36+pcm.length,true); ws(8,'WAVE'); ws(12,'fmt ');
+  v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true);
+  v.setUint32(24,24000,true); v.setUint32(28,48000,true); v.setUint16(32,2,true);
+  v.setUint16(34,16,true); ws(36,'data'); v.setUint32(40,pcm.length,true);
+  new Uint8Array(buf,44).set(pcm);
+  return new Blob([buf],{type:'audio/wav'});
+}
+
+function copyScript() {
+  navigator.clipboard.writeText(document.getElementById('ttsScript').value||'').then(()=>notify('הועתק!','success'));
+}
+function downloadScript() {
+  const t = document.getElementById('ttsScript').value;
+  if(!t) return;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([t],{type:'text/plain;charset=utf-8'}));
+  a.download = 'script.txt'; a.click();
+}
+
+// ═══════════════════════════════
+// HISTORY
+// ═══════════════════════════════
+const typeIcons = {ivr:'📞', tts:'🎙️', script:'📝'};
+const statusColors = {success:'green', error:'red', pending:'blue'};
+
+function addToHistory(item) {
+  historyItems.unshift(item);
+  document.getElementById('historyCount').textContent = historyItems.length+' פריטים';
+}
+function renderHistory() {
+  const el = document.getElementById('historyList');
+  document.getElementById('historyCount').textContent = historyItems.length+' פריטים';
+  if(!historyItems.length) { el.innerHTML='<div style="text-align:center;color:var(--text3);padding:3rem;font-size:0.875rem;">אין עדיין היסטוריה</div>'; return; }
+  el.innerHTML = historyItems.map((item,i)=>`
+    <div class="history-item">
+      <div class="h-icon">${typeIcons[item.type]||'📄'}</div>
+      <div class="h-meta">
+        <div class="h-title">${item.title||'—'}</div>
+        <div class="h-time">${item.time?.toLocaleTimeString('he-IL')||''}</div>
+      </div>
+      <span class="h-tag ${statusColors[item.status]||'blue'}">${item.status==='success'?'✓ הצליח':item.status==='error'?'✗ שגיאה':'⏳ ממתין'}</span>
+    </div>`).join('');
+}
+function clearHistory() { historyItems=[]; renderHistory(); }
+
+// ═══════════════════════════════
+// TOKEN MODAL
+// ═══════════════════════════════
+function openTokenModal() {
+  document.getElementById('tokenModal').classList.add('open');
+  showModalPanel('login');
+}
+function closeTokenModal() {
+  document.getElementById('tokenModal').classList.remove('open');
+}
+function showModalPanel(panel) {
+  document.getElementById('modalLoginPanel').style.display = panel==='login'?'block':'none';
+  document.getElementById('modalMfaPanel').style.display = panel==='mfa'?'block':'none';
+  document.getElementById('modalSuccessPanel').style.display = panel==='success'?'block':'none';
+}
+
+async function realApi(action, params) {
+  const base = document.getElementById('yemotBase')?.value || API_BASE;
+  try {
+    const res = await fetch(base+action, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(params)});
+    return await res.json();
+  } catch(e) { return {responseStatus:'ERROR', message:e.message}; }
+}
+
+async function handleLogin() {
+  const u = document.getElementById('modalUsername').value;
+  const p = document.getElementById('modalPassword').value;
+  if(!u||!p) { document.getElementById('loginStatus').className='status-bar error'; document.getElementById('loginStatus').textContent='יש להזין מספר מערכת וסיסמה'; return; }
+  document.getElementById('loginStatus').className='status-bar loading';
+  document.getElementById('loginStatus').innerHTML='<div class="spinner"></div> מתחבר...';
+  
+  const res = await realApi('Login',{username:u, password:p});
+  if(res.responseStatus==='OK'&&res.token) {
+    loginToken = res.token;
+    await checkMfaStatus();
+  } else {
+    document.getElementById('loginStatus').className='status-bar error';
+    document.getElementById('loginStatus').textContent='❌ '+(res.message||'התחברות נכשלה');
+  }
+}
+
+async function checkMfaStatus() {
+  const s = await realApi('MFASession',{token:loginToken,action:'isPass'});
+  if(s.isPass&&!REQUIRES_HARD_MFA.includes(s.passReason)) {
+    finalizeToken();
+  } else {
+    const t = await realApi('MFASession',{token:loginToken,action:'try'});
+    if(t.isPass) finalizeToken();
+    else await getMfaMethods();
+  }
+}
+
+async function getMfaMethods() {
+  showModalPanel('mfa');
+  const r = await realApi('MFASession',{token:loginToken,action:'getMFAMethods'});
+  if(r.mfaMethods?.length) {
+    mfaMethodsCache = r.mfaMethods;
+    document.getElementById('mfaMethods').innerHTML = mfaMethodsCache.map(m=>`<option value="${m.ID}">${m.VALUE} (${m.NIKE})</option>`).join('');
+    updateMfaSendTypes();
+  }
+}
+function updateMfaSendTypes() {
+  const id = document.getElementById('mfaMethods').value;
+  const m = mfaMethodsCache.find(x=>x.ID==id);
+  if(m) document.getElementById('mfaSendType').innerHTML = m.SEND_TYPE.map(t=>`<option value="${t}">${t}</option>`).join('');
+}
+
+async function sendMfaCode() {
+  document.getElementById('mfaStatus').className='status-bar loading';
+  document.getElementById('mfaStatus').innerHTML='<div class="spinner"></div> שולח...';
+  const r = await realApi('MFASession',{token:loginToken,action:'sendMFA',mfaId:document.getElementById('mfaMethods').value,mfaSendType:document.getElementById('mfaSendType').value,lang:'HE'});
+  if(r.responseStatus==='OK') {
+    document.getElementById('mfaCodeSection').style.display='block';
+    document.getElementById('mfaStatus').className='status-bar success';
+    document.getElementById('mfaStatus').textContent='✅ קוד נשלח!';
+  } else {
+    document.getElementById('mfaStatus').className='status-bar error';
+    document.getElementById('mfaStatus').textContent='❌ '+(r.message||'שליחה נכשלה');
+  }
+}
+
+async function validateMfa() {
+  const code = document.getElementById('mfaCode').value;
+  if(!code) return;
+  document.getElementById('mfaStatus').className='status-bar loading';
+  document.getElementById('mfaStatus').innerHTML='<div class="spinner"></div> מאמת...';
+  const r = await realApi('MFASession',{token:loginToken,action:'validMFA',mfaCode:code,mfaRememberMe:false});
+  if(r.mfa_valid_status==='VALID') {
+    finalizeToken();
+  } else {
+    document.getElementById('mfaStatus').className='status-bar error';
+    document.getElementById('mfaStatus').textContent='❌ קוד שגוי'+(r.mfa_valid_left!==undefined?` (${r.mfa_valid_left} ניסיונות נותרו)`:'');
+  }
+}
+
+function finalizeToken() {
+  document.getElementById('tokenInput').value = loginToken;
+  localStorage.setItem(TOKEN_KEY, loginToken);
+  updateTokenStatus();
+  showModalPanel('success');
+  setTimeout(closeTokenModal, 2000);
+  notify('טוקן נוצר בהצלחה!','success');
+}
+
+// Close modal on overlay click
+document.getElementById('tokenModal').addEventListener('click', e => {
+  if(e.target===document.getElementById('tokenModal')) closeTokenModal();
+});
+
+// ═══════════════════════════════
+// NOTIFY
+// ═══════════════════════════════
+let notifTimer;
+function notify(msg, type='info') {
+  const el = document.getElementById('notif');
+  el.textContent = (type==='success'?'✅ ':type==='error'?'❌ ':'ℹ️ ')+msg;
+  el.className = 'notif '+type+' show';
+  clearTimeout(notifTimer);
+  notifTimer = setTimeout(()=>el.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
